@@ -9,10 +9,11 @@ using ArtFusion.Data;
 using Artfusion.Models;
 using ArtFusion.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Drawing;
 
 namespace ArtFusion.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -34,7 +35,7 @@ namespace ArtFusion.Controllers
           }
             var products =   _context.Products.ToList();
             var likes = _context.Likes.ToList();
-            var result = products.Join(likes,
+            var result = products.GroupJoin(likes,
                 product => product.Id,
                 like => like.ProductId,
                 (product, like) => new ProductsDto()
@@ -43,11 +44,12 @@ namespace ArtFusion.Controllers
                     Name = product.Name,
                     Description = product.Description,
                     Image = product.Image,
-                    LikesCount = likes.Where(likeData => likeData.ProductId==product.Id).ToList().Count,
+                    Likes = likes.Where(likeData => likeData.ProductId==product.Id).ToList(),
                     Status = product.Status,
                     CreatedAt = product.CreatedAt,
                     OwnerId = product.OwnerId,
                     CategoryId = product.CategoryId,
+                    Price = product.Price,
                 }
                 ).GroupBy(p => p.Id).Select(p => p.First()).ToList();
             return result;
@@ -62,7 +64,7 @@ namespace ArtFusion.Controllers
               return NotFound();
           }
             var productsModel = await _context.Products.FindAsync(id);
-            var likesCount = _context.Likes.Where(likeData => likeData.ProductId == id).ToList().Count;
+            var likesCount = _context.Likes.Where(likeData => likeData.ProductId == id).ToList();
 
 
             if (productsModel == null)
@@ -75,11 +77,12 @@ namespace ArtFusion.Controllers
                 Name = productsModel.Name,
                 Description = productsModel.Description,
                 Image = productsModel.Image,
-                LikesCount = likesCount,
+                Likes = likesCount,
                 Status = productsModel.Status,
                 CreatedAt = productsModel.CreatedAt,
                 OwnerId = productsModel.OwnerId,
                 CategoryId = productsModel.CategoryId,
+                Price = productsModel.Price,
             };
 
             return product;

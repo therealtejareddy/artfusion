@@ -34,6 +34,7 @@ namespace Artfusion.Controllers
                 user.CreatedAt = DateTime.Now;
                 user.UserId = Guid.NewGuid().ToString();
                 user.Role = "User";
+                user.Email = request.Email;
                 _context.Users.Add(user);
                 _context.SaveChanges();
                 return Ok(user);
@@ -62,7 +63,8 @@ namespace Artfusion.Controllers
              List<Claim> claims = new List<Claim>() { 
                 new Claim("name", userData.UserName!),
                 new Claim("role", userData.Role!),
-                new Claim("id",userData.UserId!)
+                new Claim("id",userData.UserId!),
+                new Claim("email",userData.Email!),
              };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
