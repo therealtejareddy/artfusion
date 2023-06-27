@@ -39,21 +39,38 @@ export default class NavMenu extends Component {
               <li className="inline-block ml-10">
                 <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
               </li>
-              <li className="inline-block ml-10">
-                <NavLink tag={Link} className="text-dark" to="/counter">Counter</NavLink>
-              </li>
-              <li className="inline-block ml-10">
-                <NavLink tag={Link} className="text-dark" to="/fetch-data">Fetch data</NavLink>
-              </li>
               {
                 localStorage.getItem("authToken")?
                 <>
                   <AuthConsumer>
                     {
                       (props) => {
-                        return (<li className="inline-block ml-10">
-                                  <button  className="text-dark" onClick={props.handleLogout}>Logout</button>
-                                </li>)
+                        return (
+                          <li className="inline-block ml-10">
+                            <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">Profile
+                            </button>
+                            <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                                  <div>{props.userData.name}</div>
+                                  <div class="font-medium truncate">{props.userData.email}</div>
+                                </div>
+                                <ul class="py-2 pl-0 text-sm text-gray-700 dark:text-gray-200 text-center" aria-labelledby="dropdownInformationButton">
+                                  <li className=" hover:bg-gray-200">
+                                      <NavLink tag={Link} className="text-dark" to="/">Profile</NavLink>
+                                  </li>
+                                  <li className="hover:bg-gray-200">
+                                      <NavLink tag={Link} className="text-dark" to="/">Profile</NavLink>
+                                  </li>
+                                  <li className="hover:bg-gray-200">
+                                      <NavLink tag={Link} className="text-dark" to="/">Profile</NavLink>
+                                  </li>
+                                </ul>
+                                <div class="py-2 w-full flex justify-center">
+                                  <button onClick={props.handleLogout}  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
+                                </div>
+                            </div>
+                            </li>
+                        )
                       }
                     }
                   </AuthConsumer>

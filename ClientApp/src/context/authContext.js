@@ -25,7 +25,7 @@ export const AuthProvider = ({children}) => {
             setUserData(jwt_decode(data.token))
             window.location.href = "/"
         } catch (error) {
-            alert(error);
+            console.log(error);
         }
 
     }

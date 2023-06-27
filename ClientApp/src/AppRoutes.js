@@ -4,6 +4,8 @@ import { FetchData } from "./components/FetchData";
 import Home from "./components/Home";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ProductsPage from "./pages/ProductsPage";
+import SingleProductPage from "./pages/SingleProductPage";
+import ProfilePage from "./pages/ProfilePage";
 
 const AppRoutes = [
   {
@@ -30,6 +32,14 @@ const AppRoutes = [
   {
     path: '/products',
     element: <ProductsPage></ProductsPage>
+  },
+  {
+    path: '/product/:productId',
+    element: <SingleProductPage></SingleProductPage>
+  },
+  {
+    path: '/profile',
+    element: <ProfilePage></ProfilePage>
   }
 ];
 
