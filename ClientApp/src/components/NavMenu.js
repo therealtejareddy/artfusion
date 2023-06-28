@@ -35,7 +35,7 @@ export default class NavMenu extends Component {
           <h1 className="mb-0" tag={Link} to="/">ArtFusion</h1>
           {/* <NavbarToggler onClick={this.toggleNavbar} className="mr-2" /> */}
           <div className="d-sm-inline-flex flex-sm-row-reverse">
-            <ul className="mb-0">
+            <ul className="mb-0 flex items-center">
               <li className="inline-block ml-10">
                 <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
               </li>
@@ -74,6 +74,13 @@ export default class NavMenu extends Component {
                       }
                     }
                   </AuthConsumer>
+                  <li className="inline-block ml-10">
+                    <NavLink>
+                      <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0h8m-8 0-1-4m9 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-9-4h10l2-7H3m2 7L3 4m0 0-.792-3H1"/>
+                      </svg>
+                    </NavLink>
+                  </li>
                 </>:
                 <>
                   <li className="inline-block ml-10">

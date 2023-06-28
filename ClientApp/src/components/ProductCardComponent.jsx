@@ -1,11 +1,13 @@
 import React, {useContext, useState} from 'react'
 import { descriptionShow } from '../utils/utils'
 import authContext from "./../context/authContext"
+import { useNavigate } from "react-router-dom"
 
 function ProductCardComponent({id, name, description, price, image, likesCount, likes, createdAt}) {
   const {userData} = useContext(authContext);
   const [liked, setLiked] = useState(likes.some(like => like.userId===userData.id))
   const [likeCount, setLikeCount] = useState(likesCount);
+  const navigate = useNavigate();
 
   const requestData = {
             method: "POST",
@@ -29,6 +31,14 @@ function ProductCardComponent({id, name, description, price, image, likesCount, 
       setLikeCount(prev => prev-1)
     }
   }
+
+  function cardClick(e) {
+    e.stopPropagation()
+
+    console.log(id);
+    navigate(`/product/${id}`);
+  }
+
   function isNew(createdTime) {
     if((new Date().getFullYear() === new Date(createdAt).getFullYear()) && (new Date().getMonth() === new Date(createdAt).getMonth()) && (new Date().getDate() - new Date(createdAt).getDate() < 1)){
       return true
@@ -37,7 +47,7 @@ function ProductCardComponent({id, name, description, price, image, likesCount, 
   }
 
   return (
-    <div className="w-[19.5rem] rounded relative overflow-hidden shadow-lg mb-10 mx-4">
+    <div className="w-[19.5rem] rounded relative overflow-hidden shadow-lg mb-10 mx-4" onClick={cardClick}>
         {
           isNew(createdAt)?<span className="absolute bg-green-300 px-3 py-1 top-1 left-1 rounded-md">New</span>:null
         }  
