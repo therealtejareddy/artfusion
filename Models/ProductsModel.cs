@@ -14,5 +14,6 @@ namespace Artfusion.Models
         public string? OwnerId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? Status { get; set; } //[listed, sold out]
+
     }
 }
