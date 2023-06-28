@@ -6,6 +6,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import ProductsPage from "./pages/ProductsPage";
 import SingleProductPage from "./pages/SingleProductPage";
 import ProfilePage from "./pages/ProfilePage";
+import CartPage from "./pages/CartPage";
 
 const AppRoutes = [
   {
@@ -38,8 +39,12 @@ const AppRoutes = [
     element: <SingleProductPage></SingleProductPage>
   },
   {
-    path: '/profile',
+    path: '/profile/:userId',
     element: <ProfilePage></ProfilePage>
+  },
+  {
+    path: '/cart',
+    element: <CartPage></CartPage>
   }
 ];
 
