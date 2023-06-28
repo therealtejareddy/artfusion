@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ArtFusion.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using NuGet.Protocol;
 using Stripe;
 using Stripe.Checkout;
+using System.Collections;
 
 namespace ArtFusion.Controllers
 {
@@ -10,36 +14,39 @@ namespace ArtFusion.Controllers
     public class PaymentsController : ControllerBase
     {
         [HttpPost("checkout")]
-        public IActionResult StripeCheckout()
+        public async Task<IActionResult> StripeCheckout([FromBody] CheckoutSessionDto req)
         {
-            Stripe.StripeConfiguration.ApiKey = "sk_test_4eC39HqLyjWDarjtT1zdp7dc";
-
+            //Console.WriteLine(req.Count);
+            Stripe.StripeConfiguration.ApiKey = "sk_test_51IV9euJ3fcy584Vl4M06FXrWsyIgIunJJqUpg16zEziAB8hiML7urmge7VpeZaGawxq4tV901UEwplSWyCIjFrSb00AoTbP7CO";
+            List<SessionLineItemOptions> allItems = new List<SessionLineItemOptions>();
+            for(int i = 0;i<req.items.Count;i++)
+            {
+                var item = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        Currency = "INR",
+                        UnitAmount = Convert.ToInt64(req.items[i].Price * 100),
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Description = req.items[i].Description,
+                            Name = req.items[i].Name,
+                            Images = new List<string>() { req.items[i].Image }
+                        }
+                    },
+                    Quantity = 1
+                };
+                allItems.Add(item);
+            }
             var options = new SessionCreateOptions
             {
                 SuccessUrl = "https://google.com/",
-                LineItems = new List<SessionLineItemOptions>
-                 {
-                    new SessionLineItemOptions
-                    {
-                      PriceData = new SessionLineItemPriceDataOptions
-                      {
-                          Currency = "INR",
-                          UnitAmount = 5000,
-                          ProductData = new SessionLineItemPriceDataProductDataOptions
-                          {
-                              Description = "Description",
-                              Name = "Name",
-                          }
-                      },
-                      Quantity = 2,
-
-                    },
-                 },
+                LineItems = allItems,
                 Mode = "payment",
             };
             var service = new SessionService();
             var session = service.Create(options);
-            return Ok(session.Url);
+            return Ok(new {id= session.Id });
         }
         [HttpPost("webhook")]
         public async Task<IActionResult> WebHookHandler()
