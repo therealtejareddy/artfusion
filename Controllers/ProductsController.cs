@@ -33,7 +33,7 @@ namespace ArtFusion.Controllers
           {
               return NotFound();
           }
-            var products =   _context.Products.ToList();
+            var products =   _context.Products.Where(p => p.Status!="Sold Out").ToList();
             var likes = _context.Likes.ToList();
             var result = products.GroupJoin(likes,
                 product => product.Id,
@@ -129,7 +129,7 @@ namespace ArtFusion.Controllers
               return Problem("Entity set 'ApplicationDbContext.Products'  is null.");
           }
             productsModel.Id = Guid.NewGuid().ToString();
-            productsModel.Status = "listed";
+            productsModel.Status = "Listed";
             productsModel.CreatedAt = DateTime.Now;
             _context.Products.Add(productsModel);
             try

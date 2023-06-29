@@ -61,9 +61,9 @@ namespace Artfusion.Controllers
         private string CreateToken(UserModel userData)
         {
              List<Claim> claims = new List<Claim>() { 
+                new Claim("id",userData.UserId!),
                 new Claim("name", userData.UserName!),
                 new Claim("role", userData.Role!),
-                new Claim("id",userData.UserId!),
                 new Claim("email",userData.Email!),
              };
 

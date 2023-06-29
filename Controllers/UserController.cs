@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ArtFusion.Data;
 using Artfusion.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ArtFusion.Controllers
 {
@@ -42,7 +43,12 @@ namespace ArtFusion.Controllers
           }
             var userModel = await _context.Users.FindAsync(id);
             var products = _context.Products.Where(p => p.OwnerId == id).ToList();
-
+            var token = Request.Headers["Authorization"].ToString().Substring(7);
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            var currentUserId = jwtSecurityToken.Claims.ElementAt(2).Value;
+            var followers = _context.Follows.Where(d => d.FollowedUserId == id && d.FollowingUserId==currentUserId).ToList();
+            var followersCount = _context.Follows.Where(d => d.FollowedUserId == id).ToList().Count;
             if (userModel == null)
             {
                 return NotFound();
@@ -56,7 +62,10 @@ namespace ArtFusion.Controllers
                 email = userModel.Email,
                 firstName = userModel.FirstName,
                 lastName = userModel.LastName,
-                products = products
+                products = products,
+                followers = followers,
+                followersCount = followersCount
+
             });
         }
 

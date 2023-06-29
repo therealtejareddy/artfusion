@@ -110,8 +110,11 @@ namespace ArtFusion.Controllers
           {
               return Problem("Entity set 'ApplicationDbContext.ShoppingCartItem'  is null.");
           }
-            shoppingCartItemModel.Id = Guid.NewGuid().ToString();
-            _context.ShoppingCartItem.Add(shoppingCartItemModel);
+            if (_context.Products.Find(shoppingCartItemModel.ProductId).Status!="Sold Out")
+            {
+                shoppingCartItemModel.Id = Guid.NewGuid().ToString();
+                _context.ShoppingCartItem.Add(shoppingCartItemModel);
+            }
             try
             {
                 await _context.SaveChangesAsync();
