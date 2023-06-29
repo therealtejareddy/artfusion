@@ -3,6 +3,7 @@ import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavLink } from 'reactstra
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import authContext, { AuthConsumer } from '../context/authContext';
+import { AppConsumer } from '../context/appContext';
 
 export default class NavMenu extends Component {
   static displayName = NavMenu.name;
@@ -56,10 +57,10 @@ export default class NavMenu extends Component {
                                 </div>
                                 <ul class="py-2 pl-0 text-sm text-gray-700 dark:text-gray-200 text-center" aria-labelledby="dropdownInformationButton">
                                   <li className=" hover:bg-gray-200">
-                                      <NavLink tag={Link} className="text-dark" to="/">Profile</NavLink>
+                                      <NavLink tag={Link} className="text-dark" to="/profile">Profile</NavLink>
                                   </li>
                                   <li className="hover:bg-gray-200">
-                                      <NavLink tag={Link} className="text-dark" to="/">Profile</NavLink>
+                                      <NavLink tag={Link} className="text-dark" to="/my-orders">My Orders</NavLink>
                                   </li>
                                   <li className="hover:bg-gray-200">
                                       <NavLink tag={Link} className="text-dark" to="/">Profile</NavLink>
@@ -75,7 +76,14 @@ export default class NavMenu extends Component {
                     }
                   </AuthConsumer>
                   <li className="inline-block ml-10">
-                    <NavLink>
+                    <NavLink tag={Link} to="/cart" className="relative">
+                      <AppConsumer>
+                        {
+                          (props) => {
+                            return(<span className="absolute bg-red-500 text-white rounded-full text-sm px-1 top-0 right-1">{props.cartItemsCount}</span>)
+                          }
+                        }
+                      </AppConsumer>
                       <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0h8m-8 0-1-4m9 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-9-4h10l2-7H3m2 7L3 4m0 0-.792-3H1"/>
                       </svg>

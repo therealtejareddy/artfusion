@@ -1,31 +1,33 @@
 import React, {useContext, useState} from 'react'
 import { descriptionShow } from '../utils/utils'
 import authContext from "./../context/authContext"
+import appContext from "./../context/appContext"
 import { useNavigate } from "react-router-dom"
+import {postRequestOptions} from "./../utils/utils";
 
 function ProductCardComponent({id, name, description, price, image, likesCount, likes, createdAt}) {
   const {userData} = useContext(authContext);
+  const {setCartItemsCount} = useContext(appContext);
+
   const [liked, setLiked] = useState(likes.some(like => like.userId===userData.id))
   const [likeCount, setLikeCount] = useState(likesCount);
   const navigate = useNavigate();
 
-  const requestData = {
-            method: "POST",
-            headers: {
-              'Authorization':`Bearer ${localStorage.getItem("authToken")}`,
-              'Content-Type':'application/json'
-            }
-          }
-
+    async function addToCartHandler(){
+        let response = await fetch(`api/ShoppingCartItem`,{...postRequestOptions, body: JSON.stringify({productId:id, userId:userData.id})});
+        if(response.status===201){
+            setCartItemsCount(prev => prev+1);
+        }
+    }
   async function likeHandler() {
-    let response = await fetch(`/api/Follow/like?productId=${id}&userId=${userData.id}`,requestData);
+    let response = await fetch(`/api/Follow/like?productId=${id}&userId=${userData.id}`,postRequestOptions);
     if(response.status===200){
       setLiked(prev => !prev)
       setLikeCount(prev => prev+1)
     }
   }
   async function unLikeHandler(){
-    let response = await fetch(`/api/Follow/unlike?productId=${id}&userId=${userData.id}`,requestData);
+    let response = await fetch(`/api/Follow/unlike?productId=${id}&userId=${userData.id}`,postRequestOptions);
     if(response.status===200){
       setLiked(prev => !prev)
       setLikeCount(prev => prev-1)
@@ -64,7 +66,7 @@ function ProductCardComponent({id, name, description, price, image, likesCount, 
       </div>
       <div className="px-6 flex items-center pb-4 justify-between">
         <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Buy Now</button>
-        <button type="button" className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+        <button onClick={addToCartHandler} type="button" className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
           <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path></svg>
           <span className="sr-only">Icon description</span>
         </button>          

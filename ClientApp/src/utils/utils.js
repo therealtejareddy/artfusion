@@ -21,6 +21,10 @@ export const getRequestOptions = {
                 }
             }
 
+export const deleteRequestOptins = {
+  
+}
+
 export const redirectToCheckout = async (prods) => {
         console.log(prods);
         let items = prods.map(prod =>{

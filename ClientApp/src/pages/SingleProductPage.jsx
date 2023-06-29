@@ -2,9 +2,11 @@ import React, {useState, useEffect, useContext} from 'react'
 import {useParams} from "react-router-dom"
 import authContext from "./../context/authContext"
 import { redirectToCheckout } from '../utils/utils'
+import appContext from '../context/appContext'
 
 function SingleProductPage() {
     const {userData} = useContext(authContext)
+    const {setCartItemsCount} = useContext(appContext)
     const {productId} = useParams()
     const [product, setProduct] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -38,7 +40,7 @@ function SingleProductPage() {
     async function addToCartHandler(){
         let response = await fetch(`api/ShoppingCartItem`,{...requestData, body: JSON.stringify({productId:product.id, userId:userData.id})});
         if(response.status===201){
-            console.log("added to cart");
+            setCartItemsCount(prev => prev+1);
         }
     }
     useEffect(() => {

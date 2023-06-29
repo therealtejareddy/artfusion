@@ -4,6 +4,7 @@ import AppRoutes from './AppRoutes';
 import { Layout } from './components/Layout';
 import './custom.css';
 import { AuthProvider } from './context/authContext';
+import { AppProvider } from './context/appContext';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -11,14 +12,16 @@ export default class App extends Component {
   render() {
     return (
       <AuthProvider>
-        <Layout>
-          <Routes>
-            {AppRoutes.map((route, index) => {
-              const { element, ...rest } = route;
-              return <Route key={index} {...rest} element={element} />;
-            })}
-          </Routes>
-        </Layout>
+        <AppProvider>
+            <Layout>
+              <Routes>
+                {AppRoutes.map((route, index) => {
+                  const { element, ...rest } = route;
+                  return <Route key={index} {...rest} element={element} />;
+                })}
+              </Routes>
+            </Layout>
+        </AppProvider>
       </AuthProvider>
     );
   }

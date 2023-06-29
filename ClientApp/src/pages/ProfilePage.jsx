@@ -1,9 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {useParams} from "react-router-dom"
+import { followHandler, unFollowHandler } from '../utils/followHandlers';
+import {authContext} from "./../context/authContext"
 
 function ProfilePage() {
   const [user, setUser] = useState(null)
+  const {userData}  = useContext(authContext);
   const {userId} = useParams()
+  const [isFollowing, setIsFollowing] = useState();
+  const [followersCount, setFollowersCount] = useState(0)
 
   const requestData = {
             headers: {
@@ -18,6 +23,8 @@ function ProfilePage() {
       console.log(response);
       console.log(data);
       setUser(data);
+      setIsFollowing(data.followers.length!==0);
+      setFollowersCount(data.followersCount)
       console.log(user);
 
     }
@@ -52,21 +59,35 @@ function ProfilePage() {
                 </div>
                 <div className="w-full lg:w-4/12 px-4 lg:order-3 lg:text-right lg:self-center">
                   <div className="py-6 px-3 mt-32 sm:mt-0">
-                    <button className="bg-green-500 active:bg-green-600 uppercase text-white font-bold hover:shadow-md shadow text-xs px-4 py-2 rounded outline-none focus:outline-none sm:mr-2 mb-1 ease-linear transition-all duration-150" type="button">
-                      Connect
+                    {
+                      !isFollowing ? <button onClick={() => followHandler(user.userId, userData.id).then(status =>{
+                        if(status===200){
+                          setIsFollowing(true)
+                          setFollowersCount(prev => prev+1)
+                        }
+                      })} className="bg-green-500 active:bg-green-600 uppercase text-white font-bold hover:shadow-md shadow text-xs px-4 py-2 rounded outline-none focus:outline-none sm:mr-2 mb-1 ease-linear transition-all duration-150" type="button">
+                      Follow
+                    </button> : <button onClick={() => unFollowHandler(user.userId, userData.id).then(status => {
+                      if(status===200){
+                        setIsFollowing(false)
+                        setFollowersCount(prev => prev-1)
+                      }
+                    })} className="bg-red-500 active:bg-red-600 uppercase text-white font-bold hover:shadow-md shadow text-xs px-4 py-2 rounded outline-none focus:outline-none sm:mr-2 mb-1 ease-linear transition-all duration-150" type="button">
+                      Unfollow
                     </button>
+                    }
                   </div>
                 </div>
                 <div className="w-full lg:w-4/12 px-4 lg:order-1">
                   <div className="flex justify-center py-4 lg:pt-4 pt-8">
                     <div className="mr-4 p-3 text-center">
-                      <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">22</span><span className="text-sm text-blueGray-400">Arts</span>
+                      <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">{user && user.products.length}</span><span className="text-sm text-blueGray-400">Arts</span>
                     </div>
                     <div className="mr-4 p-3 text-center">
                       <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">10</span><span className="text-sm text-blueGray-400">Sold Out</span>
                     </div>
                     <div className="lg:mr-4 p-3 text-center">
-                      <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">89</span><span className="text-sm text-blueGray-400">Followers</span>
+                      <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">{ user && followersCount}</span><span className="text-sm text-blueGray-400">Followers</span>
                     </div>
                   </div>
                 </div>

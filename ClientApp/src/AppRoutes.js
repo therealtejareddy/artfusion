@@ -7,6 +7,7 @@ import ProductsPage from "./pages/ProductsPage";
 import SingleProductPage from "./pages/SingleProductPage";
 import ProfilePage from "./pages/ProfilePage";
 import CartPage from "./pages/CartPage";
+import MyOrders from "./pages/MyOrders";
 
 const AppRoutes = [
   {
@@ -45,6 +46,10 @@ const AppRoutes = [
   {
     path: '/cart',
     element: <CartPage></CartPage>
+  },
+  {
+    path: '/my-orders',
+    element: <MyOrders></MyOrders>
   }
 ];
 
