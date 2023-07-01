@@ -22,14 +22,14 @@ namespace ArtFusion.Controllers
         }
 
         // GET: api/UserAddress
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserAddressModel>>> GetUserAddress()
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<UserAddressModel>>> GetUserAddress(string userId)
         {
           if (_context.UserAddress == null)
           {
               return NotFound();
           }
-            return await _context.UserAddress.ToListAsync();
+            return await _context.UserAddress.Where(a => a.UserId==userId).ToListAsync();
         }
 
         // PUT: api/UserAddress/5

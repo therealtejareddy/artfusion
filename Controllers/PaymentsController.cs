@@ -39,6 +39,7 @@ namespace ArtFusion.Controllers
             List<SessionLineItemOptions> allItems = new List<SessionLineItemOptions>();
             var metaData = new Dictionary<string, string>();
             metaData.Add("userId", currentUserId);
+            metaData.Add("deliveryAddressId", req.DeliveryAddressId);
             for (int i = 0;i<req.items.Count;i++)
             {
                 var item = new SessionLineItemOptions
@@ -115,10 +116,10 @@ namespace ArtFusion.Controllers
                                     UserId = session.Metadata["userId"],
                                     PaymentId = sessionId,
                                     CreatedAt = DateTime.Now,
-                                    DelivaryAddressId = "123-456",
+                                    DelivaryAddressId = session.Metadata["deliveryAddressId"],
                                     Status = "Ordered"
                                 };
-                                ShoppingCartItemModel shoppingCartItemModel = _context.ShoppingCartItem.Where(i => i.ProductId == kvp.Value && i.UserId == session.Metadata["userId"]).FirstOrDefault();
+                                ShoppingCartItemModel shoppingCartItemModel = _context.ShoppingCartItem.Where(i => i.ProductId == kvp.Value && i.UserId == session.Metadata["userId"]).ToList().First();
                                 _context.ShoppingCartItem.Remove(shoppingCartItemModel);
                                 _context.OrderDetails.Add(orderDetailsModel);
                                 ProductsModel productsModel = _context.Products.Find(kvp.Value);
