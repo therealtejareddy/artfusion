@@ -22,6 +22,42 @@ namespace ArtFusion.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ArtFusion.Models.ProductMetadataModel", b =>
+                {
+                    b.Property<string>("ProductId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MetaDataKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MetaDataValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductId", "MetaDataKey");
+
+                    b.ToTable("ProductMetadata");
+                });
+
+            modelBuilder.Entity("ArtFusion.Models.ShoppingCartItemModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("ProductId", "UserId");
+
+                    b.ToTable("ShoppingCartItem");
+                });
+
             modelBuilder.Entity("Artfusion.Models.CategoryModel", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -106,8 +142,8 @@ namespace ArtFusion.Migrations
                     b.Property<string>("PaymentId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -143,6 +179,9 @@ namespace ArtFusion.Migrations
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
@@ -165,13 +204,19 @@ namespace ArtFusion.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Country")
+                    b.Property<string>("District")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -186,6 +231,12 @@ namespace ArtFusion.Migrations
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverPicURL")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -202,7 +253,13 @@ namespace ArtFusion.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfilePicURL")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")

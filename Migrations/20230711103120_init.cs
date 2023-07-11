@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArtFusion.Migrations
 {
     /// <inheritdoc />
-    public partial class addTables : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -74,12 +74,25 @@ namespace ArtFusion.Migrations
                 {
                     PaymentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Amount = table.Column<double>(type: "float", nullable: false),
+                    Amount = table.Column<long>(type: "bigint", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.PaymentId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductMetadata",
+                columns: table => new
+                {
+                    ProductId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MetaDataKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MetaDataValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductMetadata", x => new { x.ProductId, x.MetaDataKey });
                 });
 
             migrationBuilder.CreateTable(
@@ -91,6 +104,7 @@ namespace ArtFusion.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
                     OwnerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -101,16 +115,32 @@ namespace ArtFusion.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShoppingCartItem",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProductId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingCartItem", x => x.Id);
+                    table.UniqueConstraint("AK_ShoppingCartItem_ProductId_UserId", x => new { x.ProductId, x.UserId });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserAddress",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AddressLane1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AddressLane2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    District = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -128,7 +158,12 @@ namespace ArtFusion.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProfilePicURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CoverPicURL = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -155,7 +190,13 @@ namespace ArtFusion.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
+                name: "ProductMetadata");
+
+            migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingCartItem");
 
             migrationBuilder.DropTable(
                 name: "UserAddress");
