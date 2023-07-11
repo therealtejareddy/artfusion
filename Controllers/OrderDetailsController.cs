@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ArtFusion.Data;
 using Artfusion.Models;
+using System.IdentityModel.Tokens.Jwt;
+using ArtFusion.Models;
 
 namespace ArtFusion.Controllers
 {
@@ -51,21 +53,58 @@ namespace ArtFusion.Controllers
         }
 
         // GET: api/OrderDetails/5
-        [HttpGet("user/{userId}")]
-        public ActionResult<IEnumerable<OrderDetailsModel>> GetAllUserOrderDetailsModel(string userId)
+        [HttpGet("current-user")]
+        public ActionResult GetAllUserOrderDetailsModel()
         {
+            var token = Request.Headers["Authorization"].ToString().Substring(7);
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            var currentUserId = jwtSecurityToken.Claims.ElementAt(0).Value;
             if (_context.OrderDetails == null)
             {
                 return NotFound();
             }
-            var orderDetailsModel = _context.OrderDetails.Where(o => o.UserId==userId).ToList();
-
+            var products = _context.Products.ToList(); 
+            var likes = _context.Likes.ToList();
+            var orderDetailsModel = _context.OrderDetails.Where(o => o.UserId==currentUserId).ToList();
+            var productsList = products.GroupJoin(likes,
+                product => product.Id,
+                like => like.ProductId,
+                (product, like) => new ProductsDto()
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Image = product.Image,
+                    Likes = likes.Where(likeData => likeData.ProductId == product.Id).ToList(),
+                    CreatedAt = product.CreatedAt,
+                    OwnerId = product.OwnerId,
+                    CategoryId = product.CategoryId,
+                    Price = product.Price,
+                }
+                ).GroupBy(p => p.Id).Select(p => p.First()).ToList();
+            var orders = orderDetailsModel.Join(productsList,
+                order => order.ProductId,
+                product => product.Id,
+                (order, product) => new
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Image = product.Image,
+                    Likes = product.Likes,
+                    CreatedAt = order.CreatedAt,
+                    OwnerId = product.OwnerId,
+                    CategoryId = product.CategoryId,
+                    Price = product.Price,
+                    Status = order.Status
+                }
+                ).ToList();
             if (orderDetailsModel == null)
             {
                 return NotFound();
             }
-
-            return orderDetailsModel;
+            return Ok(new {data = orders});
         }
 
         // PUT: api/OrderDetails/5

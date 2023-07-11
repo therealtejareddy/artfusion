@@ -115,6 +115,13 @@ namespace ArtFusion.Controllers
                 shoppingCartItemModel.Id = Guid.NewGuid().ToString();
                 _context.ShoppingCartItem.Add(shoppingCartItemModel);
             }
+            if(_context.ShoppingCartItem.Where(p => p.ProductId==shoppingCartItemModel.ProductId && p.UserId==shoppingCartItemModel.UserId).Count()>0)
+            {
+                return Conflict(new
+                {
+                    message="Art Already Contains in Cart"
+                });
+            }
             try
             {
                 await _context.SaveChangesAsync();

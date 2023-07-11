@@ -4,6 +4,7 @@ using ArtFusion.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NuGet.Protocol;
 using Stripe;
@@ -19,9 +20,12 @@ namespace ArtFusion.Controllers
     {
 
         private readonly ApplicationDbContext _context;
-        public PaymentsController(ApplicationDbContext context)
+        private readonly IConfiguration _configuration;
+
+        public PaymentsController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("checkout")]
@@ -35,7 +39,7 @@ namespace ArtFusion.Controllers
             Console.WriteLine(currentUserId);
 
 
-            Stripe.StripeConfiguration.ApiKey = "sk_test_51IV9euJ3fcy584Vl4M06FXrWsyIgIunJJqUpg16zEziAB8hiML7urmge7VpeZaGawxq4tV901UEwplSWyCIjFrSb00AoTbP7CO";
+            Stripe.StripeConfiguration.ApiKey = _configuration.GetSection("Stripe:ApiKey").Value;
             List<SessionLineItemOptions> allItems = new List<SessionLineItemOptions>();
             var metaData = new Dictionary<string, string>();
             metaData.Add("userId", currentUserId);
@@ -62,7 +66,7 @@ namespace ArtFusion.Controllers
             }
             var options = new SessionCreateOptions
             {
-                SuccessUrl = "https://google.com/",
+                SuccessUrl = "https://localhost:44453/cart/checkout/success",
                 LineItems = allItems,
                 Mode = "payment",
                 Metadata = metaData
@@ -75,8 +79,8 @@ namespace ArtFusion.Controllers
         [HttpPost("webhook")]
         public async Task<IActionResult> WebHookHandler()
         {
-            string endpointSecret = "whsec_c6c8ff44d229c398e51a8cd1475f20d76f1222fe40668db4ff41a099b7bc3d29";
-            StripeConfiguration.ApiKey = "sk_test_51IV9euJ3fcy584Vl4M06FXrWsyIgIunJJqUpg16zEziAB8hiML7urmge7VpeZaGawxq4tV901UEwplSWyCIjFrSb00AoTbP7CO";
+            string endpointSecret = _configuration.GetSection("Stripe:WebHookKey").Value;
+            StripeConfiguration.ApiKey = _configuration.GetSection("Stripe:ApiKey").Value;
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             try
             {
@@ -107,6 +111,8 @@ namespace ArtFusion.Controllers
                         _context.Payments.Add(paymentsModel);
                         foreach(var kvp in session.Metadata)
                         {
+                            Console.WriteLine(kvp.Key);
+                            Console.WriteLine(kvp.Value);
                             if (kvp.Key.StartsWith("product"))
                             {
                                 OrderDetailsModel orderDetailsModel = new OrderDetailsModel()
@@ -119,11 +125,16 @@ namespace ArtFusion.Controllers
                                     DelivaryAddressId = session.Metadata["deliveryAddressId"],
                                     Status = "Ordered"
                                 };
-                                ShoppingCartItemModel shoppingCartItemModel = _context.ShoppingCartItem.Where(i => i.ProductId == kvp.Value && i.UserId == session.Metadata["userId"]).ToList().First();
-                                _context.ShoppingCartItem.Remove(shoppingCartItemModel);
+                                var shoppingCartItemModel = _context.ShoppingCartItem.Where(i => i.ProductId == kvp.Value && i.UserId == session.Metadata["userId"]).ToList();
+                                if (shoppingCartItemModel.Count > 0)
+                                {
+                                    _context.ShoppingCartItem.Remove(shoppingCartItemModel.First());
+                                }
                                 _context.OrderDetails.Add(orderDetailsModel);
+                                Console.WriteLine(kvp.Value);
                                 ProductsModel productsModel = _context.Products.Find(kvp.Value);
                                 productsModel.Status = "Sold Out";
+                                _context.Entry(productsModel).State=EntityState.Modified;
                             }
                         }
                         _context.SaveChanges();

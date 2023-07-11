@@ -25,7 +25,8 @@ namespace Artfusion.Controllers
         public ActionResult<UserModel> Register(UserDto request)
         {
             var existUser = _context.Users.Where(user => user.UserName == request.UserName).ToList();
-            if (existUser.Count==0)
+            var existUserEmail = _context.Users.Where(user => user.Email == request.Email).ToList();
+            if (existUser.Count==0 && existUserEmail.Count==0)
             {
                 UserModel user = new UserModel();
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -35,11 +36,13 @@ namespace Artfusion.Controllers
                 user.UserId = Guid.NewGuid().ToString();
                 user.Role = "User";
                 user.Email = request.Email;
+                user.FirstName = request.FirstName;
+                user.LastName = request.LastName;
                 _context.Users.Add(user);
                 _context.SaveChanges();
                 return Ok(user);
             }
-            return Ok(new { message = "User Already Exist" });
+            return Conflict(new { message = "User Already Exist" });
         }
 
         [HttpPost("login")]
