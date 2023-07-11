@@ -1,5 +1,5 @@
 /* Provide sufficient contrast against white background */
-a {
+/* a {
   color: #0366d6;
 }
 
@@ -11,4 +11,16 @@ code {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
+} */
+
+::-webkit-scrollbar{
+  width: 4px;
+}
+
+::-webkit-scrollbar-track{
+  background-color: rgb(124, 124, 124);
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: rgb(3, 3, 42);
 }

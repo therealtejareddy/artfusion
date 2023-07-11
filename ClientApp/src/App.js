@@ -1,28 +1,26 @@
-import React, { Component } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, {useContext} from 'react';
+import { Route, Routes, Redirect } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
 import { Layout } from './components/Layout';
 import './custom.css';
-import { AuthProvider } from './context/authContext';
+import { AuthProvider, authContext } from './context/authContext';
 import { AppProvider } from './context/appContext';
 
-export default class App extends Component {
-  static displayName = App.name;
+export default function App() {
+  //static displayName = App.name;
 
-  render() {
     return (
       <AuthProvider>
         <AppProvider>
-            <Layout>
+          <Layout>
               <Routes>
                 {AppRoutes.map((route, index) => {
                   const { element, ...rest } = route;
-                  return <Route key={index} {...rest} element={element} />;
+                  return <Route key={index} {...rest} element={element} ></Route>
                 })}
               </Routes>
             </Layout>
         </AppProvider>
       </AuthProvider>
     );
-  }
 }
