@@ -1,0 +1,34 @@
+﻿version: '3'
+networks:
+    artfusion:
+services:
+    db:
+        container_name: db
+        image: "mcr.microsoft.com/mssql/server:2019-latest"
+        ports:
+        - "8082:1433"
+        environment:
+            MSSQL_SA_PASSWORD: "S3cur3P@ssW0rd!"
+            ACCEPT_EULA: "Y"
+        networks:
+        - artfusion
+    artfusion:
+        image: "teja003/artfusion:0.0.3.RELEASE"
+        ports:
+        - "8080:80"
+        - "8081:443"
+        depends_on:
+        - db
+        environment:
+            ASPNETCORE_URLS: "https://+;http://+"
+            ASPNETCORE_HTTPS_PORT: "8081"
+            ASPNETCORE_ENVIRONMENT: "Development"
+            DB_HOST: db
+            DB_NAME: master
+            DB_SA_PASSWORD: S3cur3P@ssW0rd!
+        networks:
+        - artfusion
+        volumes:
+            - ${USERPROFILE}\AppData\Roaming\Microsoft\UserSecrets\:/root/.microsoft/usersecrets
+            - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/
+
