@@ -1,37 +1,32 @@
 import React, {useEffect,useState, useContext } from 'react'
 import ProductCardComponent from '../components/ProductCardComponent';
+import UserProfileCardComponent from '../components/UserProfileCardComponent';
 import CategoriesComponent from '../components/CategoriesComponent';
-import {useParams, useNavigate, createSearchParams} from "react-router-dom"
+import {useParams, useNavigate, createSearchParams, useSearchParams} from "react-router-dom"
 import { getRequestOptions } from '../utils/utils';
 import { appContext } from '../context/appContext';
-import {Toaster} from 'react-hot-toast';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
-function ProductsPage() {
+function SearchResultPage() {
   const [products, setProducts] = useState([])
+  const [users, setUsers] = useState([])
   const [categoryName, setCategoryName] = useState()
   const {categoryId} = useParams();
   const {categories} = useContext(appContext)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams()
 
 
   useEffect(() => {
-      async function fetchProducts() {
-          let response = await fetch('/api/Products',getRequestOptions);
+      async function fetchData() {
+          let response = await fetch(`api/Search?value=${searchParams.get("search")}`,getRequestOptions);
           let data = await response.json()
-          setProducts(data)
+          setProducts(data.products)
+          setUsers(data.users)
       }
-      async function fetchProductsByCategory(){
-        let response = await fetch(`/api/Products/category/${categoryId}`,getRequestOptions);
-          let data = await response.json()
-          setProducts(data)
-          setCategoryName(categories.filter(category => category.categoryId==categoryId)[0].name)
-          console.log(categories.filter(category => category.categoryId==categoryId));
-      }
-      if(!categoryId){
-        fetchProducts()
-      }else{
-        fetchProductsByCategory()
-      }
+      fetchData()
+
+    console.log(searchParams.get("search"));
     }, [categoryId])
     
   async function handleSearch(e){
@@ -46,17 +41,17 @@ function ProductsPage() {
   return (
     <div className="pt-[4rem]">
       <div className="flex max-w-8xl mx-auto pt-4">
-        <div className="z-0 md:block hidden">
+        <div className="z-0">
           <CategoriesComponent></CategoriesComponent>
         </div>
         <div className="w-full z-0">
-          <div class="w-full sm:flex items-center justify-between">
+          <div class="w-full flex items-center justify-between">
             <div>
               {
-                categoryId==null?<><h2 className="ml-6">All Arts</h2></>:<><h2 className="ml-6">{categoryName}</h2></>
+                <h2 className="ml-6">Search Reasults for "{searchParams.get("search")}"</h2>
               }
             </div>
-            <div className="w-2/3"> 
+            <div className="w-1/2"> 
               <form onSubmit={handleSearch}>   
                   <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                   <div class="relative">
@@ -71,31 +66,39 @@ function ProductsPage() {
               </form>
             </div>
           </div>
-          <div className="w-full flex flex-wrap justify-center -z-10 mt-4">
-            {
-              products.map(product => {
-                return <ProductCardComponent key={product.id} ownerId={product.ownerId} id={product.id} name={product.name} description={product.description} price={product.price} image={product.image} likes={product.likes} likesCount={product.likes.length} createdAt={product.createdAt} status={product.status}></ProductCardComponent>
-              })
-            }
+          <div className="pl-4">
+            <Tabs>
+                <TabList>
+                    <Tab>Products</Tab>
+                    <Tab>Users</Tab>
+                </TabList>
+                <TabPanel>
+                    <h3>Products</h3>
+                    <div className="w-full flex flex-wrap justify-center -z-10">
+                        {
+                        products.map(product => {
+                            return <ProductCardComponent key={product.id} ownerId={product.ownerId} id={product.id} name={product.name} description={product.description} price={product.price} image={product.image} likes={product.likes} likesCount={product.likes.length} createdAt={product.createdAt} status={product.status}></ProductCardComponent>
+                        })
+                        }
+                    </div>
+                </TabPanel>
+                <TabPanel>
+                        <h3>Users</h3>
+                        <div className="w-full flex flex-wrap justify-center">
+                            {
+                                users.map(user =>{
+                                  return <UserProfileCardComponent key={user.userId} userId={user.userId} coverPicURL={user.coverPicURL} profilePicURL={user.profilePicURL}  userName={user.userName}  firstName={user.firstName}  lastName={user.lastName}  email={user.email} followersCount={user.followersCount} soldOutCount={user.soldOutCount} listedCount={user.listedCount}/>
+                                })
+                            }
+                        </div>
+                </TabPanel>
+            </Tabs>
           </div>
         </div>
       </div>
-            <Toaster toastOptions={{
-                success:{
-                  style:{
-                      padding:"24px",
-              }
-              },error:{
-                style:{
-                  padding: "24px"
-                }
-              }
-            }} containerStyle={{
-                              top: 40,
-                              right: 40
-                          }}/>
+            
     </div>
   )
 }
 
-export default ProductsPage
+export default SearchResultPage
