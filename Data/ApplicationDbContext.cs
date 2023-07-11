@@ -26,6 +26,11 @@ namespace ArtFusion.Data
                 table.ProductId,
                 table.UserId
             });
+            modelBuilder.Entity<ProductMetadataModel>().HasKey(table => new
+            {
+                table.ProductId,
+                table.MetaDataKey
+            });
 
         }
 
@@ -38,6 +43,7 @@ namespace ArtFusion.Data
         public DbSet<UserAddressModel> UserAddress { get; set; }
         public DbSet<UserModel> Users { get; set; }
         public DbSet<ShoppingCartItemModel> ShoppingCartItem { get; set; }
+        public DbSet<ProductMetadataModel> ProductMetadata { get; set; }
 
     }
 }
