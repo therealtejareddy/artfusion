@@ -6,9 +6,10 @@ export const appContext = createContext();
 
 export const AppProvider = ({children}) => {
     const {userData} = useContext(authContext)
-    const [cartItemsCount, setCartItemsCount] = useState(null);
+    const [cartItemsCount, setCartItemsCount] = useState(0);
     const [cartItems, setCartItems] = useState([])
     const [totalPrice, setTotalPrice] = useState(null);
+    const [categories, setCategories] = useState(JSON.parse(localStorage.getItem("categories")));
     useEffect(() => {
       async function fetchCart() {
         let response = await fetch(`api/ShoppingCartItem/all/user/${userData.id}`, getRequestOptions);
@@ -22,11 +23,20 @@ export const AppProvider = ({children}) => {
       }
       fetchCart();
     }, [])
+    useEffect(() => {
+      setTotalPrice(cartItems.reduce((acc, curr) => {
+            return acc+curr.price
+        },0))
+    }, [cartItems])
+    
     let contextData = {
         cartItemsCount,
         setCartItemsCount,
         totalPrice,
         cartItems,
+        setCartItems,
+        categories,
+        setCategories
 
     }
 
