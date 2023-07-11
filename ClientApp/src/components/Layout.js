@@ -1,16 +1,21 @@
-import React, { Component } from 'react';
-// import { Container } from 'reactstrap';
+import React, { useContext, useEffect } from 'react';
+import {useNavigate} from "react-router-dom"
 import NavMenu from './NavMenu';
+import authContext from '../context/authContext';
 
-export class Layout extends Component {
-  static displayName = Layout.name;
-
-  render() {
+export function Layout({children}) {
+    let {userData} = useContext(authContext)
+    let navigate = useNavigate()
+    useEffect(() => {
+      if(!userData){
+      navigate('/')
+    }
+    }, [])
+    
     return (
       <div>
         <NavMenu />
-          {this.props.children}
+          {children}
       </div>
     );
-  }
 }
