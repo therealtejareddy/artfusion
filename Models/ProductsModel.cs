@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ArtFusion.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Artfusion.Models
 {
@@ -15,5 +16,8 @@ namespace Artfusion.Models
         public DateTime? CreatedAt { get; set; }
         public string? Status { get; set; } //[listed, sold out]
 
+
     }
+
 }
+

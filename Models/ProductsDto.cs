@@ -14,5 +14,7 @@ namespace ArtFusion.Models
         public DateTime? CreatedAt { get; set; }
         public string? Status { get; set; }
         public List<LikesModel> Likes { get; set; }
+        public List<ProductMetadataModel> MetaData { get; set; }
+        public string? OwnerUsername { get; set; }
     }
 }
